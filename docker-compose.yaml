@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  taskserver:
+    image: 'j6s/taskwarrior-taskserver'
+    build: ./docker
+    volumes:
+      - ./data:/data
+    ports:
+      - 53589:53589
+    restart: always

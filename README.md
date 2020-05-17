@@ -22,3 +22,6 @@ On first run this will
 - Print information on how to configure clients to use this server
 
 On subsequent runs only the last part will be done.
+
+## Troubleshooting
+Address [official documentation](https://taskwarrior.org/docs/taskserver/setup.html) to make sure you have set all the parameters correctly.

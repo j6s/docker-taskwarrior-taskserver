@@ -22,3 +22,15 @@ On first run this will
 - Print information on how to configure clients to use this server
 
 On subsequent runs only the last part will be done.
+
+## Configuration
+The following Enviroment Variables are supported
+CERT_CN: This sets the CN for the Certificate. This is probably the most important variable, because it is checked by taskwarrior by default.
+CERT_KEY-LENGTH: The Bit Length of the certificate
+CERT_EXPIRATION_DAYS: The days after which the Certificate expires
+CERT_ORGANIZATION: The owner Organization of the certificate
+CERT_COUNTRY: The Country for the certificate
+CERT_STATE: The State in the country for the Certificate
+CERT_LOCALITY: The Locality for the Certificate
+ORGANIZATION: The generated Organization in Taskd
+USER: The generated user in Taskd

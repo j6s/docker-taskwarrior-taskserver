@@ -26,6 +26,30 @@ fi;
 if [ ! -f $TASKDDATA/pki/ca.cert.pem ]; then
     echo '===> No certificates found. Initializing self-signed ones.'
     cd $TASKDDATA/pki
+    if [ ! -z ${CERT_CN+x} ]; then
+        sed -i "s\CN=.*\CN=${CERT_CN}\g" vars
+    else
+        echo "===> No CN defined. This will only work if the taskserver client runs on the same machine"
+    fi
+    if [ ! -z ${CERT_KEY_LENGTH} ]; then
+        sed -i "s\BITS=.*\BITS=${CERT_KEY_LENGTH}\g" vars
+    fi
+    if [ ! -z ${CERT_EXPIRATION_DAYS+x} ]; then
+        sed -i "s\EXPIRATION_DAYS=.*\EXPIRATION_DAYS=${CERT_EXPIRATION_DAYS}\g" vars
+    fi
+    if [ ! -z ${CERT_ORGANIZATION+x} ]; then
+        sed -i "s\ORGANIZATION=.*\ORGANIZATION=${CERT_ORGANIZATION}\g" vars
+    fi
+    if [ ! -z ${CERT_COUNTRY+x} ]; then
+        sed -i "s\COUNTRY=.*\COUNTRY=${CERT_COUNTRY}\g" vars
+    fi
+    if [ ! -z ${CERT_STATE+x} ]; then
+        sed -i "s\STATE=.*\STATE=${CERT_STATE}\g" vars
+    fi
+    if [ ! -z ${CERT_LOCALITY+x} ]; then
+        sed -i "s\LOCALITY=.*\LOCALITY=${CERT_LOCALITY}\g" vars
+    fi
+
     execute ./generate
 
     execute taskd config --force client.cert $TASKDDATA/pki/client.cert.pem
@@ -39,12 +63,19 @@ else
 fi;
 
 if [ ! -f $TASKDDATA/pki/default-client.key.pem ]; then
-    echo '===> No users setup yet. Setting up organization Default with user Default'
-    execute taskd add org Default
-    execute taskd add user Default Default
+    if [ -z ${ORGANIZATION+x} ]; then
+        ORGANIZATION=Default
+    fi
+    if [ -z ${USER+x} ]; then
+        USER=Default
+    fi
+    echo "===> No users setup yet. Setting up organization ${ORGANIZATION}  with user ${USER}"
+    execute taskd add org ${ORGANIZATION}
+    execute taskd add user ${ORGANIZATION} ${USER}
     cd $TASKDDATA/pki
     ./generate.client default-client
 fi;
+
 
 echo ""
 echo ""
@@ -56,8 +87,9 @@ echo "2. Execute on your client:"
 echo "  $ task config taskd.certificate -- ~/.task/default-client.cert.pem"
 echo "  $ task config taskd.key         -- ~/.task/default-client.key.pem"
 echo "  $ task config taskd.cat         -- ~/.task/cat.cert.pem"
-echo "  $ task config taskd.server      -- host.domain:53589"
-echo "  $ task config taskd.credentials -- Default/Default/$(ls $TASKDDATA/orgs/Default/users)"
+echo "  $ task config taskd.server      -- ${CERT_CN}:53589"
+echo "  $ task config taskd.credentials -- ${ORGANIZATION}/${USER}/$(ls $TASKDDATA/orgs/${ORGANIZATION}/users)"
+
 echo ""
 echo ""
 
